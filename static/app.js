@@ -1,4 +1,7 @@
-const fileInput = document.getElementById("fileInput");
+const cameraBtn = document.getElementById("cameraBtn");
+const galleryBtn = document.getElementById("galleryBtn");
+const cameraInput = document.getElementById("cameraInput");
+const galleryInput = document.getElementById("galleryInput");
 const analyzeBtn = document.getElementById("analyzeBtn");
 const preview = document.getElementById("preview");
 const statusEl = document.getElementById("status");
@@ -6,15 +9,39 @@ const resultBox = document.getElementById("resultBox");
 const jsonOutput = document.getElementById("jsonOutput");
 const prettyResult = document.getElementById("prettyResult");
 
-fileInput.addEventListener("change", () => {
-  const file = fileInput.files[0];
+let selectedFile = null;
+
+cameraBtn.addEventListener("click", () => {
+  cameraInput.click();
+});
+
+galleryBtn.addEventListener("click", () => {
+  galleryInput.click();
+});
+
+function setSelectedFile(file) {
   if (!file) return;
+
+  selectedFile = file;
 
   const imageUrl = URL.createObjectURL(file);
   preview.src = imageUrl;
   preview.style.display = "block";
+
   resultBox.classList.add("hidden");
-  statusEl.textContent = "";
+  prettyResult.innerHTML = "";
+  jsonOutput.textContent = "";
+  statusEl.textContent = "Imagen seleccionada.";
+}
+
+cameraInput.addEventListener("change", () => {
+  const file = cameraInput.files[0];
+  setSelectedFile(file);
+});
+
+galleryInput.addEventListener("change", () => {
+  const file = galleryInput.files[0];
+  setSelectedFile(file);
 });
 
 function renderPrettyResult(data) {
@@ -39,10 +66,8 @@ function renderPrettyResult(data) {
 }
 
 analyzeBtn.addEventListener("click", async () => {
-  const file = fileInput.files[0];
-
-  if (!file) {
-    statusEl.textContent = "Seleccioná una imagen primero.";
+  if (!selectedFile) {
+    statusEl.textContent = "Primero sacá o subí una imagen.";
     return;
   }
 
@@ -53,7 +78,7 @@ analyzeBtn.addEventListener("click", async () => {
     jsonOutput.textContent = "";
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", selectedFile);
 
     const response = await fetch("/analyze-food", {
       method: "POST",
@@ -69,7 +94,9 @@ analyzeBtn.addEventListener("click", async () => {
     renderPrettyResult(data);
     jsonOutput.textContent = JSON.stringify(data, null, 2);
     resultBox.classList.remove("hidden");
-    statusEl.textContent = data.is_food ? "Análisis completado." : "La imagen no es comida.";
+    statusEl.textContent = data.is_food
+      ? "Análisis completado."
+      : "La imagen no es comida.";
   } catch (error) {
     statusEl.textContent = `Error: ${error.message}`;
   }
