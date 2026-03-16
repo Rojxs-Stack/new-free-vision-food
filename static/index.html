@@ -9,10 +9,29 @@
 <body>
   <div class="container">
     <h1>Food Analyzer Demo</h1>
-    <p class="subtitle">Subí una foto de una comida y obtené una estimación nutricional.</p>
+    <p class="subtitle">Sacá una foto o subí una imagen para obtener una estimación nutricional.</p>
 
     <div class="card">
-      <input id="fileInput" type="file" accept="image/*" capture="environment" />
+      <div class="actions">
+        <button id="cameraBtn" type="button">Usar cámara</button>
+        <button id="galleryBtn" type="button">Subir imagen</button>
+      </div>
+
+      <input
+        id="cameraInput"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+      />
+
+      <input
+        id="galleryInput"
+        type="file"
+        accept="image/*"
+        hidden
+      />
+
       <button id="analyzeBtn">Analizar</button>
     </div>
 
